@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using productMicroservice.Data;
+using productMicroservice.Data.Repository;
 using productMicroservice.Model;
 using productMicroservice.Tests.Common.ScenarioDatas;
 
@@ -7,15 +8,14 @@ namespace productMicroservice.Tests.unitTest
 {
     public class ProductUnitTest : Common.TestBase
     {
-        private DbContextClass _dbContextClass;
+        private ProductRepository _productRepository;
 
         [SetUp]
         public void Setup()
         {
             SetupTest();
 
-            DbContextClass? dbContextClass = _serviceProvider.GetService<DbContextClass>();
-            _dbContextClass = dbContextClass!;
+            _productRepository = _serviceProvider?.GetService<ProductRepository>();
 
             _dbContextClass.CreateProduct();
         }
@@ -35,12 +35,12 @@ namespace productMicroservice.Tests.unitTest
                 ProductId = 2,
                 ProductName = "Maudit Mot Dit",
                 ProductDescription = "A vous de tourner autour du mot dans ce jeu d’association d’idées malicieux !",
-                ProductPrice = 500,
-                ProductStock = 200
+                ProductPrice = 20,
+                ProductStock = 13
             };
 
             // Act
-            var productToAdd = await _dbContextClass.Products.AddAsync(product).ConfigureAwait(false);
+            var productToAdd = await _productRepository.CreateProductAsync(product).ConfigureAwait(false);
 
             // Assert
             Assert.Multiple(() =>
@@ -51,27 +51,13 @@ namespace productMicroservice.Tests.unitTest
         }
 
         [Test]
-        public async Task GetProduct()
+        public async Task GetProducts()
         {
             // Arrange
-            var product = new Product()
-            {
-                ProductId = 2,
-                ProductName = "Maudit Mot Dit",
-                ProductDescription = "A vous de tourner autour du mot dans ce jeu d’association d’idées malicieux !",
-                ProductPrice = 500,
-                ProductStock = 200
-            };
+            var products = await _productRepository.GetProductsAsync().ConfigureAwait(false);
 
-            // Act
-            var productToAdd = await _dbContextClass.Products.AddAsync(product).ConfigureAwait(false);
+            Assert.That(products, Is.Not.Null);
 
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(productToAdd, Is.Not.Null);
-                Assert.That(product.ProductName, Is.EqualTo("Maudit Mot Dit"));
-            });
         }
     }
 }
