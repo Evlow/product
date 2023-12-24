@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - develop
-      
+
 jobs:
   build:
     name: Build and analyze
@@ -43,5 +43,4 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"products_productsmicroservices" /o:"products" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          <insert_your_build_command>
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
